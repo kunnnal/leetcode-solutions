@@ -16,3 +16,5 @@ class Solution:
                 prev = cur
 
         return dp[m]
+# Example usage:
+# sol = Solution()
