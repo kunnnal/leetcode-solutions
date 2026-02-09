@@ -1,89 +1,33 @@
-#include <iostream>
-#include <vector>
-using namespace std;
-
-struct TreeNode {
-    int val;
-    TreeNode* left;
-    TreeNode* right;
-
-    TreeNode(int x) {
-        val = x;
-        left = nullptr;
-        right = nullptr;
-    }
-};
-
 class Solution {
 public:
-    TreeNode* balanceBST(TreeNode* root) {
-        vector<int> inorder;
+  TreeNode *balanceBST(TreeNode *root) {
+    vector<int> inorder;
+    inorderTraversal(root, inorder);
 
-        inorderTraversal(root, inorder);
+    int size = inorder.size();
 
-        return buildBalancedBST(inorder, 0, inorder.size() - 1);
-    }
+    return createBalancedBST(inorder, 0, size - 1);
+  }
 
 private:
-    void inorderTraversal(TreeNode* root, vector<int>& inorder) {
-        if (!root) return;
+  void inorderTraversal(TreeNode *root, vector<int> &inorder) {
+    if (root == nullptr)
+      return;
 
-        inorderTraversal(root->left, inorder);
-        inorder.push_back(root->val);
-        inorderTraversal(root->right, inorder);
-    }
+    inorderTraversal(root->left, inorder);
+    inorder.push_back(root->val);
+    inorderTraversal(root->right, inorder);
+  }
 
-    TreeNode* buildBalancedBST(const vector<int>& inorder, int left, int right) {
-        if (left > right) return nullptr;
+  TreeNode *createBalancedBST(const vector<int> &inorder, int start, int end) {
+    if (start > end)
+      return nullptr;
 
-        int mid = left + (right - left) / 2;
+    int mid = start + (end - start) / 2;
 
-        TreeNode* root = new TreeNode(inorder[mid]);
-        root->left = buildBalancedBST(inorder, left, mid - 1);
-        root->right = buildBalancedBST(inorder, mid + 1, right);
+    TreeNode *leftSubtree = createBalancedBST(inorder, start, mid - 1);
+    TreeNode *rightSubtree = createBalancedBST(inorder, mid + 1, end);
 
-        return root;
-    }
+    return new TreeNode(inorder[mid], leftSubtree, rightSubtree);
+  }
 };
-
-void printInorder(TreeNode* root) {
-    if (!root) return;
-
-    printInorder(root->left);
-    cout << root->val << " ";
-    printInorder(root->right);
-}
-
-TreeNode* insertBST(TreeNode* root, int val) {
-    if (!root) return new TreeNode(val);
-
-    if (val < root->val)
-        root->left = insertBST(root->left, val);
-    else
-        root->right = insertBST(root->right, val);
-
-    return root;
-}
-
-int main() {
-    TreeNode* root = nullptr;
-
-    int arr[] = {10, 5, 1, 7, 40, 50};
-
-    for (int x : arr) {
-        root = insertBST(root, x);
-    }
-
-    cout << "Original BST (Inorder): ";
-    printInorder(root);
-    cout << endl;
-
-    Solution s;
-    root = s.balanceBST(root);
-
-    cout << "Balanced BST (Inorder): ";
-    printInorder(root);
-    cout << endl;
-
-    return 0;
-}
